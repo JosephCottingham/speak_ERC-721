@@ -1,4 +1,4 @@
-CONTRACT_ADRESS='0x0f0dB9898bD7AE859BDc58e9B50C1Bff30493d50'
+CONTRACT_ADRESS='0x27Bf0A71E39a2554C36883bf4FAa1eE6f0Bf67dA'
 
 var speakCardBase = `
 <div class="col-sm-4">
@@ -69,7 +69,7 @@ App = {
   },
   
   initContract: function() {
-    $.getJSON('SpeakIERC721.json', function(data) {
+    $.getJSON('Speak.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with truffle-contract.
       // const abi = JSON.parse(data);
       App.contracts.SpeakIERC721 = new web3.eth.Contract(data['abi'], CONTRACT_ADRESS);
