@@ -36,7 +36,6 @@ contract SpeakWordManager is Ownable {
     address[] public speakers;
 
     uint256[] public topWords;
-    uint256[] public recentWords;
 
     event NewWord(uint wordId, string title, string body, address owner);
 
@@ -55,8 +54,8 @@ contract SpeakWordManager is Ownable {
         words.push(newWord);
         uint256 id = words.length;
         wordToOwner[id] = msg.sender;
+        wordToLikeAddresses[id].push(msg.sender);
         ownerToBal[msg.sender] = ownerToBal[msg.sender] + 1;
-        configRecentWords(id);
         configSpeakers();
         emit NewWord(id, _title, _body, wordToOwner[id]);
     }
@@ -107,32 +106,6 @@ contract SpeakWordManager is Ownable {
         // Complete the replacement
         if (lowestLikes<wordToLikeAddresses[wordId].length) {
             topWords[lowestId]=wordId;
-        }
-    }
-
-    /// @notice Checks if wordId is now one of the top words
-    /// @param wordId id of word token
-    function configRecentWords(uint256 wordId) internal {
-        // Populate recent words till filled to max
-        if (recentWords.length < 50) {
-            recentWords.push(wordId);
-            return;
-        }
-
-        // Figure out which word to replace
-        uint256 latestTime=words[recentWords[0]].timestamp;
-        uint256 latestTimeId=recentWords[0];
-        for (uint256 index = 1; index < recentWords.length; index++) {
-            uint256 curtime = words[recentWords[index]].timestamp;
-            if (latestTime>curtime) {
-                latestTime=curtime;
-                latestTimeId=recentWords[latestTimeId];
-            }
-        }
-
-        // Complete the replacement
-        if (latestTime<words[wordId].timestamp) {
-            recentWords[latestTimeId]=wordId;
         }
     }
 
@@ -189,8 +162,8 @@ contract SpeakWordManager is Ownable {
         bool[50] memory likedArray;
     
         uint256 count = 0;
-        for (uint256 index = 0; index < recentWords.length; index++) {
-            address[] memory likes = wordToLikeAddresses[recentWords[index]];
+        for (uint256 index = words.length-1; index > words.length-51; index--) {
+            address[] memory likes = wordToLikeAddresses[index];
             bool liked = false;
             for (uint256 indexLike = 0; indexLike < likes.length; indexLike++) {
                 if (likes[indexLike] == msg.sender) {
@@ -198,9 +171,9 @@ contract SpeakWordManager is Ownable {
                 }
             }
             wordIdArray[count] = index;
-            titleArray[count] = words[recentWords[index]].title;
-            bodyArray[count] = words[recentWords[index]].body;
-            timestampArray[count] = words[recentWords[index]].timestamp;
+            titleArray[count] = words[index].title;
+            bodyArray[count] = words[index].body;
+            timestampArray[count] = words[index].timestamp;
             totalLikesArray[count] = likes.length;
             likedArray[count] = liked;
             count++;
