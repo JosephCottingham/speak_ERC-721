@@ -1,3 +1,5 @@
+CONTRACT_ADRESS='0x0f0dB9898bD7AE859BDc58e9B50C1Bff30493d50'
+
 var speakCardBase = `
 <div class="col-sm-4">
   <div class="card">
@@ -65,12 +67,12 @@ App = {
 
     return App.initContract();
   },
-
+  
   initContract: function() {
     $.getJSON('SpeakIERC721.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with truffle-contract.
       // const abi = JSON.parse(data);
-      App.contracts.SpeakIERC721 = new web3.eth.Contract(data['abi'], '0xD3A5F6149f20fdA15B1eA462855f3BdC4b807654');
+      App.contracts.SpeakIERC721 = new web3.eth.Contract(data['abi'], CONTRACT_ADRESS);
 
       // Set the provider for our contract.
       // App.contracts.SpeakIERC721.setProvider(App.web3Provider);
@@ -143,7 +145,7 @@ App = {
         accountAddress = accounts[0];
       }
       console.log(accountAddress);
-      console.log('get words');
+      console.log('getWords');
 
       App.contracts.SpeakIERC721.methods.getWords(accountAddress).call({from: account}).then(function(result) {
         console.log(result);
@@ -164,9 +166,30 @@ App = {
         accountAddress = accounts[0];
       }
       console.log(accountAddress);
-      console.log('get words');
+      console.log('getTopWords');
 
       App.contracts.SpeakIERC721.methods.getTopWords().call({from: account}).then(function(result) {
+        console.log(result);
+        App.setWords(result)
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    // });
+  },
+
+  getRecentWords: async function(accountAddress) {
+    // return new Promise((resolve, reject) => {
+      console.log('Getting words...');    
+      var accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      console.log(accounts);
+      var account = accounts[0];
+      if (accountAddress == null) {
+        accountAddress = accounts[0];
+      }
+      console.log(accountAddress);
+      console.log('getRecentWords');
+
+      App.contracts.SpeakIERC721.methods.getRecentWords().call({from: account}).then(function(result) {
         console.log(result);
         App.setWords(result)
       }).catch(function(err) {
@@ -187,7 +210,7 @@ App = {
         accountAddress = accounts[0];
       }
       console.log(accountAddress);
-      console.log('get words');
+      console.log('likeWord');
 
       App.contracts.SpeakIERC721.methods.like(wordId).call({from: account}).then(function(result) {
         console.log(result);
@@ -200,7 +223,7 @@ App = {
     console.log(words);
     $("#words-panel").empty()
     for (var wordIndex = 0; wordIndex < words[0].length; wordIndex++) {
-      if (words[2][wordIndex] == "0") {
+      if (words['timestampArray'][wordIndex] == "0") {
         break;
       }
       card = speakCardBase;
@@ -211,7 +234,7 @@ App = {
         }
       }
       var date = new Date(words['timestampArray'][wordIndex]*1000)
-      $("#words-panel").append(card.replaceAll("{{BODY}}", words[1][wordIndex]).replaceAll("{{TITLE}}", words[0][wordIndex]).replaceAll("{{TIMESTAMP}}", date.toDateString()).replaceAll("{{WORDID}}", words['wordIdArray'][wordIndex]));
+      $("#words-panel").append(card.replaceAll("{{BODY}}", words['bodyArray'][wordIndex]).replaceAll("{{TITLE}}", words['titleArray'][wordIndex]).replaceAll("{{TIMESTAMP}}", date.toDateString()).replaceAll("{{WORDID}}", words['wordIdArray'][wordIndex]));
     }
   }
   
