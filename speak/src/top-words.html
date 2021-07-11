@@ -22,6 +22,7 @@
           <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
             <li><a href="/" class="nav-link px-2 text-white">Your Words</a></li>
             <li><a href="#" class="nav-link px-2 text-secondary">Top Words</a></li>
+            <li><a href="/recent-words.html" class="nav-link px-2 text-white">Recent Words</a></li>
           </ul>
   
           <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
@@ -30,7 +31,7 @@
   
           <div class="text-end">
             <button type="button" class="btn btn-outline-light me-2">Connect Metamask</button>
-            <button type="button" id="create-word" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal">Create Word</button>
+            <button type="button" id="create-word" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#WordCreateModal">Create Word</button>
           </div>
         </div>
       </div>
@@ -54,14 +55,12 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+<div class="modal fade" id="WordCreateModal" tabindex="-1" aria-labelledby="WordCreateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Create Word</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form action="">
