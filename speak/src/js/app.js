@@ -1,14 +1,44 @@
+var speakCardBase = `
+<div class="col-sm-4">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">{{TITLE}}</h5>
+      <p class="card-text">
+      {{BODY}}
+      </p>
+    </div>
+    {{TIMESTAMP}}
+  </div>
+</div>
+`
 
-var speakCard = `
-<div class="card" style="width: 18rem;">
-  <div class="card-body">
-    <h5 class="card-title">{{TITLE}}</h5>
-    <p class="card-text">
-    {{BODY}}
-    </p>
-    <a href="#" class="card-link">Card link</a>
-    <a href="#" class="card-link">Another link</a>
- </div>
+var speakCardWithLike = `
+<div class="col-sm-4">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">{{TITLE}}</h5>
+      <p class="card-text">
+      {{BODY}}
+      </p>
+      <button class="btn btn-primary">Like</button>
+    </div>
+    {{TIMESTAMP}}
+  </div>
+</div>
+`
+
+var speakCardWithLikeDisable = `
+<div class="col-sm-4">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">{{TITLE}}</h5>
+      <p class="card-text">
+      {{BODY}}
+      </p>
+      <button wordId="{{WORDID}}" class="btn btn-primary like-btn" disabled>Like</button>
+    </div>
+    {{TIMESTAMP}}
+  </div>
 </div>
 `
 
@@ -51,6 +81,7 @@ App = {
   bindEvents: function() {
     $(document).on('click', '#transferButton', App.handleTransfer);
     $(document).on('click', '#create-btn-input', App.handleCreate);
+    $(document).on('click', '.like-btn', App.likeWord);
   },
 
   handleCreate: async function(event) {
@@ -123,6 +154,48 @@ App = {
     // });
   },
 
+  getTopWords: async function(accountAddress) {
+    // return new Promise((resolve, reject) => {
+      console.log('Getting words...');    
+      var accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      console.log(accounts);
+      var account = accounts[0];
+      if (accountAddress == null) {
+        accountAddress = accounts[0];
+      }
+      console.log(accountAddress);
+      console.log('get words');
+
+      App.contracts.SpeakIERC721.methods.getTopWords().call({from: account}).then(function(result) {
+        console.log(result);
+        App.setWords(result)
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    // });
+  },
+
+  likeWord: async function(likeBtn) {
+      console.log(likeBtn);
+      var wordId = likeBtn.attr('wordId');
+      // return new Promise((resolve, reject) => {
+      console.log('Getting words...');    
+      var accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      console.log(accounts);
+      var account = accounts[0];
+      if (accountAddress == null) {
+        accountAddress = accounts[0];
+      }
+      console.log(accountAddress);
+      console.log('get words');
+
+      App.contracts.SpeakIERC721.methods.like(wordId).call({from: account}).then(function(result) {
+        console.log(result);
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    // });
+  },
   setWords: function(words) {
     console.log(words);
     $("#words-panel").empty()
@@ -130,16 +203,16 @@ App = {
       if (words[2][wordIndex] == "0") {
         break;
       }
-      $("#words-panel").append(speakCard.replaceAll("{{BODY}}", words[1][wordIndex]).replaceAll("{{TITLE}}", words[0][wordIndex]));
+      card = speakCardBase;
+      if (words['liked'] != undefined) {
+        card = speakCardWithLike;
+        if (words['liked'] == true) {
+          card = speakCardWithLikeDisable;
+        }
+      }
+      var date = new Date(words['timestampArray'][wordIndex]*1000)
+      $("#words-panel").append(card.replaceAll("{{BODY}}", words[1][wordIndex]).replaceAll("{{TITLE}}", words[0][wordIndex]).replaceAll("{{TIMESTAMP}}", date.toDateString()).replaceAll("{{WORDID}}", words['wordIdArray'][wordIndex]));
     }
   }
   
 };
-
-$(function() {
-  $(window).load(function() {
-    App.init()
-    window.setTimeout(App.getWords, 1000);
-    
-  });
-});

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Speak - YourWords</title>
+    <title>Speak - TopWords</title>
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -20,8 +20,8 @@
           </a>
   
           <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-            <li><a href="#" class="nav-link px-2 text-secondary">Your Words</a></li>
-            <li><a href="/top-words.html" class="nav-link px-2 text-white">Top Words</a></li>
+            <li><a href="/" class="nav-link px-2 text-white">Your Words</a></li>
+            <li><a href="#" class="nav-link px-2 text-secondary">Top Words</a></li>
           </ul>
   
           <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
@@ -39,7 +39,7 @@
     <div class="container">
       <div class="row">
         <div class="col-xs-12 col-sm-12 col-sm-push-2">
-          <h1 class="text-center">Your Words</h1>
+          <h1 class="text-center">Top Words</h1>
           <hr/>
           <br/>
         </div>
@@ -95,7 +95,7 @@
       $(function() {
         $(window).load(function() {
           App.init()
-          window.setTimeout(App.getWords, 1000);
+          window.setTimeout(App.getTopWords, 1000);
         });
       });
     </script>
