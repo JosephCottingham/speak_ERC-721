@@ -125,22 +125,41 @@ contract SpeakWordManager is Ownable {
         uint256[50] memory totalLikesArray;
         bool[50] memory likedArray;
     
-        uint256 count = 0;
-        for (uint256 index = 0; index < topWords.length; index++) {
-            address[] memory likes = wordToLikeAddresses[topWords[index]];
-            bool liked = false;
-            for (uint256 indexLike = 0; indexLike < likes.length; indexLike++) {
-                if (likes[indexLike] == msg.sender) {
-                    liked = true;
+        uint256 lowestLikes = 0;
+        uint256 lowestLikesId = 0;
+        for (uint256 index = 0; index < words.length; index++) {
+            address[] memory likes = wordToLikeAddresses[index];
+            if (index < 50 || likes.length > lowestLikes) {
+                if (index < 50) {
+                    lowestLikesId=index;
+                    lowestLikes=likes.length;
+                } else {
+                    // Finds the lowest like word in current top list
+                    for (uint256 indexTopWord = 0; indexTopWord < wordIdArray.length; indexTopWord++) {
+                        address[] memory likesSub = wordToLikeAddresses[wordIdArray[indexTopWord]];
+                        if (likesSub.length < lowestLikes) {
+                            lowestLikesId=indexTopWord;
+                            lowestLikes=likesSub.length;
+                        }
+                    }
                 }
+                
+                bool liked = false;
+                for (uint256 indexLike = 0; indexLike < likes.length; indexLike++) {
+                    if (likes[indexLike] == msg.sender) {
+                        liked = true;
+                    }
+                }
+                
+                // Sets values
+                wordIdArray[lowestLikesId] = index;
+                titleArray[lowestLikesId] = words[topWords[index]].title;
+                bodyArray[lowestLikesId] = words[topWords[index]].body;
+                timestampArray[lowestLikesId] = words[topWords[index]].timestamp;
+                totalLikesArray[lowestLikesId] = likes.length;
+                likedArray[lowestLikesId] = liked;
+
             }
-            wordIdArray[count] = index;
-            titleArray[count] = words[topWords[index]].title;
-            bodyArray[count] = words[topWords[index]].body;
-            timestampArray[count] = words[topWords[index]].timestamp;
-            totalLikesArray[count] = likes.length;
-            likedArray[count] = liked;
-            count++;
         }
         return (wordIdArray, titleArray, bodyArray, timestampArray, totalLikesArray, likedArray);
     }
