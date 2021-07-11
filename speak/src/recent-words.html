@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Speak - TopWords</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <header class="p-3 bg-dark text-white">
+      <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+          <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+            <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg>
+          </a>
+  
+          <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            <li><a href="/" class="nav-link px-2 text-white">Your Words</a></li>
+            <li><a href="/top-words.html" class="nav-link px-2 text-white">Top Words</a></li>
+            <li><a href="#" class="nav-link px-2 text-secondary">Recent Words</a></li>
+          </ul>
+  
+          <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
+            <input type="search" class="form-control form-control-dark" placeholder="Search..." aria-label="Search">
+          </form>
+  
+          <div class="text-end">
+            <button type="button" class="btn btn-outline-light me-2">Connect Metamask</button>
+            <button type="button" id="create-word" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#WordCreateModal">Create Word</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-sm-push-2">
+          <h1 class="text-center">Recent Words</h1>
+          <hr/>
+          <br/>
+        </div>
+      </div>
+
+      <div class="row" id="words-panel">
+
+      </div>
+    </div>
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="WordCreateModal" tabindex="-1" aria-labelledby="WordCreateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Create Word</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="">
+          <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="email" class="form-control" id="title-input" placeholder="Awesome Title Here">
+          </div>
+          <div class="mb-3">
+            <label for="body" class="form-label">Body</label>
+            <textarea class="form-control" id="body-input" rows="3"></textarea>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <input type="button" class="btn btn-primary" value="Create" id="create-btn-input" data-dismiss="modal">
+        </form>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+      $(function() {
+        $(window).load(function() {
+          App.init()
+          window.setTimeout(App.getRecentWords, 1000);
+        });
+      });
+    </script>
+  </body>
+</html>
