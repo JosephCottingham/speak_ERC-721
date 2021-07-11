@@ -1,5 +1,5 @@
-var SpeakIERC721 = artifacts.require("./SpeakIERC721.sol");
+var Speak = artifacts.require("./Speak.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(SpeakIERC721);
+  deployer.deploy(Speak);
 };
