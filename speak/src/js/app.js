@@ -1,4 +1,4 @@
-CONTRACT_ADRESS='0xe806e617f571004c4d72FE27Ab6c56cC90c1774b'
+CONTRACT_ADRESS='0x0AAE1F042CAbbC1D719E23b992b7857a0359C3dD'
 
 var speakCardBase = `
 <div class="col-sm-4">
@@ -9,7 +9,7 @@ var speakCardBase = `
       {{BODY}}
       </p>
     </div>
-    {{TIMESTAMP}}
+    {{TIMESTAMP}} --- {{LIKES}}
   </div>
 </div>
 `
@@ -22,9 +22,9 @@ var speakCardWithLike = `
       <p class="card-text">
       {{BODY}}
       </p>
-      <button class="btn btn-primary">Like</button>
+      <button wordId="{{WORDID}}" class="btn btn-primary like-btn">Like</button>
     </div>
-    {{TIMESTAMP}}
+    {{TIMESTAMP}} --- {{LIKES}}
   </div>
 </div>
 `
@@ -39,7 +39,7 @@ var speakCardWithLikeDisable = `
       </p>
       <button wordId="{{WORDID}}" class="btn btn-primary like-btn" disabled>Like</button>
     </div>
-    {{TIMESTAMP}}
+    {{TIMESTAMP}} --- {{LIKES}}
   </div>
 </div>
 `
@@ -61,7 +61,8 @@ App = {
       web3 = new Web3(App.web3Provider);
     } else {
       // set the provider you want from Web3.providers
-      App.web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:7545');
+      // App.web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:7545');
+      App.web3Provider = new Web3.providers.HttpProvider('https://eth-rinkeby.alchemyapi.io/v2/AzEoPVLVtvDF6IB_sWrBInxeIPYKjJ-Z');
       web3 = new Web3(App.web3Provider);
     }
 
@@ -199,25 +200,21 @@ App = {
   },
 
   likeWord: async function(likeBtn) {
-      console.log(likeBtn);
-      var wordId = likeBtn.attr('wordId');
+      console.log(likeBtn.target);
+      var wordId = parseInt(likeBtn.target.getAttribute('wordId'));
       // return new Promise((resolve, reject) => {
-      console.log('Getting words...');    
+      console.log(`Liking Word... ID: ${wordId}`);    
       var accounts = await ethereum.request({ method: 'eth_requestAccounts' });
       console.log(accounts);
       var account = accounts[0];
-      if (accountAddress == null) {
-        accountAddress = accounts[0];
-      }
-      console.log(accountAddress);
-      console.log('likeWord');
+      console.log(account);
 
       App.contracts.SpeakIERC721.methods.like(wordId).call({from: account}).then(function(result) {
         console.log(result);
       }).catch(function(err) {
         console.log(err.message);
       });
-    // });
+    // // });
   },
   setWords: function(words) {
     console.log(words);
@@ -227,14 +224,15 @@ App = {
         break;
       }
       card = speakCardBase;
-      if (words['liked'] != undefined) {
+      console.log();
+      if (words['likedArray'][wordIndex] != undefined) {
         card = speakCardWithLike;
-        if (words['liked'] == true) {
+        if (words['likedArray'][wordIndex] == true) {
           card = speakCardWithLikeDisable;
         }
       }
       var date = new Date(words['timestampArray'][wordIndex]*1000)
-      $("#words-panel").append(card.replaceAll("{{BODY}}", words['bodyArray'][wordIndex]).replaceAll("{{TITLE}}", words['titleArray'][wordIndex]).replaceAll("{{TIMESTAMP}}", date.toDateString()).replaceAll("{{WORDID}}", words['wordIdArray'][wordIndex]));
+      $("#words-panel").append(card.replaceAll("{{LIKES}}", words['totalLikesArray'][wordIndex]).replaceAll("{{WORDID}}", words['wordIdArray'][wordIndex]).replaceAll("{{BODY}}", words['bodyArray'][wordIndex]).replaceAll("{{TITLE}}", words['titleArray'][wordIndex]).replaceAll("{{TIMESTAMP}}", date.toDateString()).replaceAll("{{WORDID}}", words['wordIdArray'][wordIndex]));
     }
   }
   
