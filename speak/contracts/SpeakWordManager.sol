@@ -28,8 +28,8 @@ contract SpeakWordManager is Ownable {
 
     uint createWordFee = 0.001 ether;
 
-    mapping (uint => address[]) wordToLikeAddresses;
-    mapping (uint => address) wordToOwner;
+    mapping (uint256 => address[]) wordToLikeAddresses;
+    mapping (uint256 => address) wordToOwner;
     mapping (address => uint) ownerToBal;
 
     Word[] public words;
@@ -69,44 +69,16 @@ contract SpeakWordManager is Ownable {
 
     /// @notice Like a word by word id
     /// @param wordId id of word token
-    function like(uint256 wordId) external {
+    function like(uint256 wordId) external returns (bool result) {
         // Check if address has already like content
-        address[] memory wordLikes = wordToLikeAddresses[wordId];
-        for (uint256 index = 0; index < wordLikes.length; index++) {
-            if (msg.sender == wordLikes[index]) {
-                return;
+        for (uint256 index = 0; index < wordToLikeAddresses[wordId].length; index++) {
+            if (msg.sender == wordToLikeAddresses[wordId][index]) {
+                return false;
             }
         }
         // Like the word
         wordToLikeAddresses[wordId].push(msg.sender);
-        // Check if this word now needs to be added to the top list
-        configTopWords(wordId);
-    }
-
-    /// @notice Checks if wordId is now one of the top words
-    /// @param wordId id of word token
-    function configTopWords(uint256 wordId) internal {
-        // Populate top words till filled to max
-        if (topWords.length < 50) {
-            topWords.push(wordId);
-            return;
-        }
-
-        // Figure out which word to replace
-        uint256 lowestLikes=wordToLikeAddresses[topWords[0]].length;
-        uint256 lowestId=topWords[0];
-        for (uint256 index = 1; index < topWords.length; index++) {
-            uint256 curLikes = wordToLikeAddresses[topWords[index]].length;
-            if (lowestLikes>curLikes) {
-                lowestLikes=curLikes;
-                lowestId=topWords[index];
-            }
-        }
-
-        // Complete the replacement
-        if (lowestLikes<wordToLikeAddresses[wordId].length) {
-            topWords[lowestId]=wordId;
-        }
+        return true;
     }
 
 
@@ -135,7 +107,7 @@ contract SpeakWordManager is Ownable {
                     lowestLikes=likes.length;
                 } else {
                     // Finds the lowest like word in current top list
-                    for (uint256 indexTopWord = 0; indexTopWord < wordIdArray.length; indexTopWord++) {
+                    for (uint256 indexTopWord = 0; indexTopWord < 50; indexTopWord++) {
                         address[] memory likesSub = wordToLikeAddresses[wordIdArray[indexTopWord]];
                         if (likesSub.length < lowestLikes) {
                             lowestLikesId=indexTopWord;
@@ -143,7 +115,7 @@ contract SpeakWordManager is Ownable {
                         }
                     }
                 }
-                
+
                 bool liked = false;
                 for (uint256 indexLike = 0; indexLike < likes.length; indexLike++) {
                     if (likes[indexLike] == msg.sender) {
@@ -153,9 +125,9 @@ contract SpeakWordManager is Ownable {
                 
                 // Sets values
                 wordIdArray[lowestLikesId] = index;
-                titleArray[lowestLikesId] = words[topWords[index]].title;
-                bodyArray[lowestLikesId] = words[topWords[index]].body;
-                timestampArray[lowestLikesId] = words[topWords[index]].timestamp;
+                titleArray[lowestLikesId] = words[index].title;
+                bodyArray[lowestLikesId] = words[index].body;
+                timestampArray[lowestLikesId] = words[index].timestamp;
                 totalLikesArray[lowestLikesId] = likes.length;
                 likedArray[lowestLikesId] = liked;
 
@@ -181,21 +153,31 @@ contract SpeakWordManager is Ownable {
         bool[50] memory likedArray;
     
         uint256 count = 0;
-        for (uint256 index = words.length-1; index > words.length-51; index--) {
-            address[] memory likes = wordToLikeAddresses[index];
+        uint256 length = words.length;
+        if (length < 50) {
+            length=0;
+        } else {
+            length=length-51;
+        }
+        for (uint256 index = words.length-1; index >= length; index--) {
             bool liked = false;
-            for (uint256 indexLike = 0; indexLike < likes.length; indexLike++) {
-                if (likes[indexLike] == msg.sender) {
+            for (uint256 indexLike = 0; indexLike < wordToLikeAddresses[index].length; indexLike++) {
+                if (wordToLikeAddresses[index][indexLike] == msg.sender) {
                     liked = true;
                 }
             }
+            // Sets values
             wordIdArray[count] = index;
             titleArray[count] = words[index].title;
             bodyArray[count] = words[index].body;
             timestampArray[count] = words[index].timestamp;
-            totalLikesArray[count] = likes.length;
+            totalLikesArray[count] = wordToLikeAddresses[index].length;
             likedArray[count] = liked;
             count++;
+            // Breaks if about to flip sign bit
+            if (index == 0) {
+                break;
+            }
         }
         return (wordIdArray, titleArray, bodyArray, timestampArray, totalLikesArray, likedArray);
     }
