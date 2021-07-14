@@ -70,7 +70,7 @@ App = {
   },
   
   initContract: function() {
-    $.getJSON('Speak.json', function(data) {
+    $.getJSON('https://staticsites-joe-ms.s3.amazonaws.com/build/contracts/Speak.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with truffle-contract.
       // const abi = JSON.parse(data);
       App.contracts.SpeakIERC721 = new web3.eth.Contract(data['abi'], CONTRACT_ADRESS);
@@ -225,14 +225,16 @@ App = {
       }
       card = speakCardBase;
       console.log();
-      if (words['likedArray'][wordIndex] != undefined) {
+      var date = new Date(words['timestampArray'][wordIndex]*1000)
+      if (words['likedArray'] !=  undefined && words['likedArray'][wordIndex] != undefined) {
         card = speakCardWithLike;
         if (words['likedArray'][wordIndex] == true) {
           card = speakCardWithLikeDisable;
         }
+        $("#words-panel").append(card.replaceAll("{{LIKES}}", words['totalLikesArray'][wordIndex]).replaceAll("{{WORDID}}", words['wordIdArray'][wordIndex]).replaceAll("{{BODY}}", words['bodyArray'][wordIndex]).replaceAll("{{TITLE}}", words['titleArray'][wordIndex]).replaceAll("{{TIMESTAMP}}", date.toDateString()).replaceAll("{{WORDID}}", words['wordIdArray'][wordIndex]));
+      } else {
+        $("#words-panel").append(card.replaceAll("{{WORDID}}", words['wordIdArray'][wordIndex]).replaceAll("{{BODY}}", words['bodyArray'][wordIndex]).replaceAll("{{TITLE}}", words['titleArray'][wordIndex]).replaceAll("{{TIMESTAMP}}", date.toDateString()).replaceAll("{{WORDID}}", words['wordIdArray'][wordIndex]));
       }
-      var date = new Date(words['timestampArray'][wordIndex]*1000)
-      $("#words-panel").append(card.replaceAll("{{LIKES}}", words['totalLikesArray'][wordIndex]).replaceAll("{{WORDID}}", words['wordIdArray'][wordIndex]).replaceAll("{{BODY}}", words['bodyArray'][wordIndex]).replaceAll("{{TITLE}}", words['titleArray'][wordIndex]).replaceAll("{{TIMESTAMP}}", date.toDateString()).replaceAll("{{WORDID}}", words['wordIdArray'][wordIndex]));
     }
   }
   
