@@ -1,3 +1,19 @@
 # speak_ERC-721
 
-0xa129e182c8377cBA37dF0f6F9640c6B3BfC9ee01
+
+## Live Details
+
+Rinkeby Contract Adress: "0x0AAE1F042CAbbC1D719E23b992b7857a0359C3dD"
+
+[Live Here](https://staticsites-joe-ms.s3.amazonaws.com/recent-words.html)
+
+## Dev/Build Instructions
+
+```bash
+# Deploy contract
+$ truffle build
+$ truffle migrate --network rinkeby
+
+# Run frontend content delivery server locally
+$ npm run dev
+```
