@@ -9,7 +9,7 @@ var speakCardBase = `
       {{BODY}}
       </p>
     </div>
-    {{TIMESTAMP}} --- {{LIKES}}
+    {{TIMESTAMP}}
   </div>
 </div>
 `
